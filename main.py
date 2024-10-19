@@ -12,11 +12,12 @@ from shot import Shot
 def main():
     pygame.init()
     print("Starting asteroids!")
-    #print(f"Screen width: {SCREEN_WIDTH}")
-    #print(f"Screen height: {SCREEN_HEIGHT}")
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     score = 0
+    points = 0
+    lives = 3
+    points_to_new_life = NEW_LIFE_POINTS
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     updatable = pygame.sprite.Group()
@@ -45,13 +46,24 @@ def main():
 
         for a in asteroids:
             if player.collides_with(a):
-                print("Game over!")
-                print(f"Score: {score}")
-                sys.exit()
+                lives -= 1
+                if lives == 0:
+                    print("Game over!")
+                    print(f"Score: {score}")
+                    sys.exit()
+                else:
+                    player.kill()
+                    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
             for s in shots:
                 if a.collides_with(s):
-                    score += a.split()
+                    points += a.split()
+                    score += points
+                    points_to_new_life -= points
+                    points = 0
+                    if points_to_new_life <= 0:
+                        lives += 1
+                        points_to_new_life = NEW_LIFE_POINTS
                     s.kill()
 
         screen.fill("black")
